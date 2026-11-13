@@ -224,7 +224,7 @@ func person(offset: float, is_female: bool) -> Node3D:
         [0,.979,0,.210,.129]
     ],pant,30)
     for side in [-1.0,1.0]:
-        x=side*.109
+        var x: float=side*.109
         tube(root,[
             [x,.936,0,.118,.135],
             [side*.114,.877,0,.126,.139],
