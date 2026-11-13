@@ -20,6 +20,8 @@ func mat(hex: String, rough := 0.87) -> StandardMaterial3D:
 func ball(parent: Node3D, pos: Vector3, scale3: Vector3, color: String, rotation3 := Vector3.ZERO) -> MeshInstance3D:
     var mi := MeshInstance3D.new()
     var sphere := SphereMesh.new()
+    sphere.radius = 1.0
+    sphere.height = 2.0
     sphere.radial_segments = 32
     sphere.rings = 20
     mi.mesh = sphere
@@ -166,28 +168,28 @@ func _ready() -> void:
     var env := WorldEnvironment.new()
     var e := Environment.new()
     e.background_mode = Environment.BG_COLOR
-    e.background_color = Color("deded9")
+    e.background_color = Color("aeb6b3")
     e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
     e.ambient_light_color = Color("ffffff")
-    e.ambient_light_energy = 0.74
-    e.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+    e.ambient_light_energy = 0.34
+    e.tonemap_mode = Environment.TONE_MAPPER_LINEAR
     env.environment = e
     add_child(env)
     var sunlight := DirectionalLight3D.new()
     sunlight.rotation_degrees = Vector3(-48,-40,0)
-    sunlight.light_energy = 0.91
+    sunlight.light_energy = 0.55
     sunlight.shadow_enabled = true
     add_child(sunlight)
     var fill := DirectionalLight3D.new()
     fill.rotation_degrees=Vector3(-30,128,0)
-    fill.light_energy=0.31
+    fill.light_energy=0.13
     add_child(fill)
-    box(self,Vector3(0,-0.086,0),Vector3(30,0.13,30),"d3d3cb")
+    box(self,Vector3(0,-0.086,0),Vector3(30,0.13,30),"939e98")
     male = create_character(-0.88,false)
     female = create_character(0.88,true)
     cam = Camera3D.new()
     cam.fov=48
-    cam.position=Vector3(0,1.62,6.30)
+    cam.position=Vector3(0,1.62,5.40)
     add_child(cam)
     cam.look_at(Vector3(0,1.52,0))
     cam.current = true
@@ -197,7 +199,7 @@ func _process(_delta: float) -> void:
     if ticks == 45:
         _snapshot("res://renders/camp_front.png")
     elif ticks == 58:
-        cam.position = Vector3(2.30,1.70,6.20)
+        cam.position = Vector3(1.70,1.70,5.55)
         cam.look_at(Vector3(0,1.50,0))
     elif ticks == 92:
         _snapshot("res://renders/camp_three_quarter.png")
