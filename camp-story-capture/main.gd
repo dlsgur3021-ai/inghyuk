@@ -36,11 +36,14 @@ func ellipsoid(parent: Node3D, p: Vector3, radii: Vector3, color: String, angle:
 
 func tube(parent: Node3D, path: Array, color: String, sides: int = 28) -> MeshInstance3D:
     # Each section: [center_x, center_y, center_z, radius_x, radius_z]
+    var rings: Array = path.duplicate(true)
+    if float(rings[0][1]) > float(rings[rings.size()-1][1]):
+        rings.reverse()
     var st := SurfaceTool.new()
     st.begin(Mesh.PRIMITIVE_TRIANGLES)
-    for k in range(path.size() - 1):
-        var a: Array = path[k]
-        var b: Array = path[k + 1]
+    for k in range(rings.size() - 1):
+        var a: Array = rings[k]
+        var b: Array = rings[k + 1]
         for i in range(sides):
             var q0 := TAU * float(i) / sides
             var q1 := TAU * float(i + 1) / sides
