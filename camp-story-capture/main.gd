@@ -79,7 +79,7 @@ func build_face(parent: Node3D, is_female: bool) -> void:
         ball(parent, Vector3(sx*face_width*0.95, 2.495, -0.005),
             Vector3(0.063, 0.099, 0.044), skin)
         # small, natural 3D eyes with sclera, iris and pupil
-        var ex := sx*(0.126 if is_female else 0.138)
+        var ex: float = sx*(0.126 if is_female else 0.138)
         ball(parent, Vector3(ex, 2.548, 0.258), Vector3(0.058, 0.047, 0.032), "eee4d7")
         ball(parent, Vector3(ex-sx*0.004, 2.548, 0.290), Vector3(0.029, 0.034, 0.017), "5c4332")
         ball(parent, Vector3(ex-sx*0.004, 2.548, 0.307), Vector3(0.016, 0.026, 0.009), "272321")
@@ -97,8 +97,8 @@ func build_face(parent: Node3D, is_female: bool) -> void:
     ball(parent, Vector3(0.251,2.684,-0.080),Vector3(0.098,0.194,0.221),hair)
     if is_female:
         for k in range(5):
-            var xp := -0.245 + k*0.103
-            var yp := 2.777 - abs(k-2)*0.024
+            var xp: float = -0.245 + k*0.103
+            var yp: float = 2.777 - abs(k-2)*0.024
             ball(parent, Vector3(xp,yp,0.213),Vector3(0.078,0.105,0.078),hair,
                 Vector3(0,0,-0.19+k*0.06))
         ball(parent, Vector3(0.215,2.807,-0.251),Vector3(0.103,0.100,0.111),hair)
@@ -108,8 +108,8 @@ func build_face(parent: Node3D, is_female: bool) -> void:
             Vector3(0,0,-0.26))
     else:
         for k in range(5):
-            var xp := -0.25 + k*0.125
-            var yp := 2.789 - abs(k-1)*0.030
+            var xp: float = -0.25 + k*0.125
+            var yp: float = 2.789 - abs(k-1)*0.030
             ball(parent, Vector3(xp, yp,0.220),Vector3(0.092,0.089,0.091),hair,
                 Vector3(0,0,-0.14 + k*0.13))
         ball(parent,Vector3(-0.230,2.767,0.043),Vector3(0.110,0.142,0.202),hair)
@@ -150,7 +150,7 @@ func create_character(xoffset: float, is_female: bool) -> Node3D:
     # hips and legs
     ball(character,Vector3(0,1.300,0),Vector3(0.330 if is_female else 0.345,0.228,0.230),pants)
     for sx in [-1.0,1.0]:
-        var hx := sx*0.180
+        var hx: float = sx*0.180
         var knee := Vector3(sx*0.189,0.715,0.012)
         var ankle := Vector3(sx*0.199,0.197,-0.004)
         bar(character,Vector3(hx,1.307,0),knee,0.163,0.137,pants)
