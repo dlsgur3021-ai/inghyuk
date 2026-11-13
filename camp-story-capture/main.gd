@@ -26,6 +26,8 @@ func mesh_node(parent: Node3D, mesh: Mesh, color: String) -> MeshInstance3D:
 
 func ellipsoid(parent: Node3D, p: Vector3, radii: Vector3, color: String, angle: Vector3 = Vector3.ZERO) -> MeshInstance3D:
     var sm := SphereMesh.new()
+    sm.radius = 1.0
+    sm.height = 2.0
     sm.radial_segments = 32
     sm.rings = 20
     var mi := mesh_node(parent, sm, color)
@@ -53,9 +55,22 @@ func tube(parent: Node3D, path: Array, color: String, sides: int = 28) -> MeshIn
                 Vector3(float(a[0]) + cos(q1)*float(a[3]), float(a[1]), float(a[2])+sin(q1)*float(a[4])),
                 Vector3(float(b[0]) + cos(q1)*float(b[3]), float(b[1]), float(b[2])+sin(q1)*float(b[4]))
             ]
+            var rxa: float = float(a[3])
+            var rza: float = float(a[4])
+            var rxb: float = float(b[3])
+            var rzb: float = float(b[4])
+            var dh: float = max(.001,float(b[1])-float(a[1]))
+            var drx: float = (rxb-rxa)/dh
+            var drz: float = (rzb-rza)/dh
             for index in [0, 1, 2, 2, 1, 3]:
+                var q: float = q0 if index <= 1 else q1
+                var rx: float = rxa if index==0 or index==2 else rxb
+                var rz: float = rza if index==0 or index==2 else rzb
+                var normal := Vector3(cos(q)/max(.001,rx),
+                    -drx*cos(q)*cos(q)/max(.001,rx)-drz*sin(q)*sin(q)/max(.001,rz),
+                    sin(q)/max(.001,rz)).normalized()
+                st.set_normal(normal)
                 st.add_vertex(verts[index])
-    st.generate_normals()
     return mesh_node(parent, st.commit(), color)
 
 func tube_line(parent: Node3D, points: Array[Vector3], radius: float, color: String) -> void:
@@ -148,14 +163,15 @@ func face(parent: Node3D, is_female: bool) -> void:
         [0,1.716,.014,.105,.105],
         [0,1.749,.012,.107,.108],
         [0,1.768,.010,.086,.094],
-        [0,1.780,.008,.040,.049]
+        [0,1.780,.008,.040,.049],
+        [0,1.788,.008,.003,.004]
     ],hair,36)
     # angled fringe, organic locks embedded in scalp
-    for i in range(7):
-        var tx: float=-.080+i*.026
-        var yy: float=1.703+sin(float(i)*1.6)*.011
-        ellipsoid(parent,Vector3(tx,yy,-.085),
-            Vector3(.028,.015,.024),hair,Vector3(0,0,-.22+i*.07))
+    for i in range(5):
+        var tx: float=-.074+i*.035
+        var yy: float=1.708+sin(float(i)*1.6)*.004
+        ellipsoid(parent,Vector3(tx,yy,-.081),
+            Vector3(.024,.009,.013),hair,Vector3(0,0,-.14+i*.07))
     if is_female:
         # tied low ponytail, hanging behind right shoulder
         ellipsoid(parent,Vector3(.079,1.677,.094),
@@ -194,7 +210,8 @@ func person(offset: float, is_female: bool) -> Node3D:
     tube(root,[
         [0,1.364,0,.055,.052],
         [0,1.407,0,.054,.051],
-        [0,1.473,0,.049,.047]
+        [0,1.473,0,.049,.047],
+        [0,1.486,0,.032,.039]
     ],skin)
     for side in [-1.0,1.0]:
         var x: float=side*.222
@@ -276,8 +293,8 @@ func _ready() -> void:
     fill.light_energy=.20
     add_child(fill)
     rounded_box(self,Vector3(0,-.070,0),Vector3(12,.12,12),"9dbdb0")
-    person(-.55,false)
-    person(.55,true)
+    person(.55,false)
+    person(-.55,true)
     camera=Camera3D.new()
     camera.projection=Camera3D.PROJECTION_ORTHOGONAL
     camera.size=2.13
