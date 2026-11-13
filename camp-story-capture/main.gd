@@ -470,20 +470,21 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
     var crown := CylinderMesh.new()
     crown.top_radius = .218
     crown.bottom_radius = .248
-    crown.height = .185
+    crown.height = .132
     crown.radial_segments = 40
     var crown_mesh := mesh_node(root,crown,hat)
-    crown_mesh.position = Vector3(0,1.757,.026)
+    crown_mesh.position = Vector3(0,1.725,.026)
+    ellipsoid(root,Vector3(0,1.797,.025),Vector3(.212,.035,.210),hat)
     var brim := CylinderMesh.new()
     brim.top_radius = .250
     brim.bottom_radius = .284
     brim.height = .051
     brim.radial_segments = 40
     var brim_mesh := mesh_node(root,brim,hat)
-    brim_mesh.position = Vector3(0,1.669,-.020)
-    rounded_box(root,Vector3(0,1.772,-.218),Vector3(.094,.052,.014),"947f64")
+    brim_mesh.position = Vector3(0,1.660,-.020)
+    rounded_box(root,Vector3(0,1.730,-.217),Vector3(.087,.041,.014),"947f64")
     # tiny mountain badge on cap
-    tube_line(root,[Vector3(-.031,1.764,-.228),Vector3(-.002,1.784,-.231),Vector3(.027,1.764,-.228)],.006,"f1eadd")
+    tube_line(root,[Vector3(-.031,1.725,-.227),Vector3(-.002,1.743,-.230),Vector3(.027,1.725,-.227)],.006,"f1eadd")
     # shoulder straps and backpack, modeled behind upper torso.
     for side in [-1.0,1.0]:
         var sx: float=side
