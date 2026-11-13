@@ -115,10 +115,11 @@ func face(parent: Node3D, is_female: bool) -> void:
         [0,1.736,.014,.050,.041],
         [0,1.744,.015,.012,.010]
     ],skin,36)
+    ellipsoid(parent,Vector3(0,1.469,.008),Vector3(.057,.027,.060),skin)
     # Soft cheeks, connected visually with head; fine visible ears and jaw definition.
     for side in [-1.0,1.0]:
         ellipsoid(parent,Vector3(side*face_w*.92,1.591,.005),
-            Vector3(.021,.042,.022),skin)
+            Vector3(.015,.031,.017),skin)
         var eye_x: float=side*.051
         # Forward is -Z for the current orthographic camera.
         ellipsoid(parent,Vector3(eye_x,1.624,-.102),
@@ -136,12 +137,12 @@ func face(parent: Node3D, is_female: bool) -> void:
             Vector3(eye_x+side*.025,1.657,-.089)
         ],.006,eyebrow)
         ellipsoid(parent,Vector3(side*.085,1.555,-.066),
-            Vector3(.010,.009,.008),skin_shadow)
+            Vector3(.007,.006,.005),skin_shadow)
     # Rounded bridge and nose tip, thin under lip instead of a huge pasted mouth.
     ellipsoid(parent,Vector3(0,1.594,-.107),
-        Vector3(.016,.033,.016),skin)
+        Vector3(.011,.030,.012),skin)
     ellipsoid(parent,Vector3(0,1.573,-.120),
-        Vector3(.027,.016,.023),skin)
+        Vector3(.019,.012,.016),skin)
     tube_line(parent,[
         Vector3(-.046,1.526,-.083),
         Vector3(-.030,1.516,-.101),
@@ -166,12 +167,13 @@ func face(parent: Node3D, is_female: bool) -> void:
         [0,1.780,.008,.040,.049],
         [0,1.788,.008,.003,.004]
     ],hair,36)
+    ellipsoid(parent,Vector3(0,1.738,-.010),Vector3(.107,.058,.099),hair)
     # angled fringe, organic locks embedded in scalp
     for i in range(5):
         var tx: float=-.074+i*.035
         var yy: float=1.708+sin(float(i)*1.6)*.004
         ellipsoid(parent,Vector3(tx,yy,-.081),
-            Vector3(.024,.009,.013),hair,Vector3(0,0,-.14+i*.07))
+            Vector3(.022,.008,.016),hair,Vector3(0,0,-.14+i*.07))
     if is_female:
         # tied low ponytail, hanging behind right shoulder
         ellipsoid(parent,Vector3(.079,1.677,.094),
@@ -279,18 +281,18 @@ func _ready() -> void:
     env.background_color=Color("d3d2cf")
     env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
     env.ambient_light_color=Color("ffffff")
-    env.ambient_light_energy=.66
+    env.ambient_light_energy=.30
     env.tonemap_mode=Environment.TONE_MAPPER_LINEAR
     world.environment=env
     add_child(world)
     var sun := DirectionalLight3D.new()
     sun.rotation_degrees=Vector3(-52,-25,0)
-    sun.light_energy=.58
+    sun.light_energy=.37
     sun.shadow_enabled=true
     add_child(sun)
     var fill := DirectionalLight3D.new()
     fill.rotation_degrees=Vector3(-28,140,0)
-    fill.light_energy=.20
+    fill.light_energy=.12
     add_child(fill)
     rounded_box(self,Vector3(0,-.070,0),Vector3(12,.12,12),"9dbdb0")
     person(.55,false)
