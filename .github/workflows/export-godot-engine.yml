@@ -1,0 +1,24 @@
+name: Export Godot Runtime
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/export-godot-engine.yml'
+permissions:
+  contents: read
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download official Godot engine
+        run: |
+          curl -fL --retry 4 --output godot-original.zip "https://downloads.godotengine.org/?version=4.4.1&flavor=stable&platform=linux.64&slug=linux.x86_64.zip"
+          unzip -q godot-original.zip
+          mv Godot_v4.4.1-stable_linux.x86_64 godot
+          chmod +x godot
+          file godot
+      - uses: actions/upload-artifact@v4
+        with:
+          name: godot-4_4_1-linux-runtime
+          path: godot
+          retention-days: 1
