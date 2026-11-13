@@ -442,11 +442,10 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
         rounded_box(root,Vector3(sx*.122,.765,-.151),Vector3(.145,.122,.023),pocket)
         rounded_box(root,Vector3(sx*.121,.829,-.164),Vector3(.151,.031,.031),jacket_dark)
         rounded_box(root,Vector3(sx*.129,1.003,-.146),Vector3(.081,.064,.018),pocket)
-        ellipsoid(root,Vector3(sx*.233,1.075,-.067),Vector3(.052,.051,.048),jacket)
     # neck, raised soft collar, beige hoodie inside
-    tube(root,[[0,1.105,0,.081,.079],[0,1.205,0,.074,.075]],skin,24)
-    ellipsoid(root,Vector3(-.098,1.126,-.067),Vector3(.096,.073,.064),jacket_dark)
-    ellipsoid(root,Vector3(.098,1.126,-.067),Vector3(.096,.073,.064),jacket_dark)
+    tube(root,[[0,1.083,0,.081,.079],[0,1.330,0,.080,.079]],skin,24)
+    ellipsoid(root,Vector3(-.073,1.124,-.058),Vector3(.069,.042,.058),jacket_dark)
+    ellipsoid(root,Vector3(.073,1.124,-.058),Vector3(.069,.042,.058),jacket_dark)
     # Large egg-shaped head with subtle cheek and chin taper
     ellipsoid(root,Vector3(0,1.510,.004),Vector3(.255,.267,.224),skin)
     ellipsoid(root,Vector3(0,1.381,-.022),Vector3(.186,.115,.189),skin)
@@ -487,7 +486,7 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
     # shoulder straps and backpack, modeled behind upper torso.
     for side in [-1.0,1.0]:
         var sx: float=side
-        tube_line(root,[Vector3(sx*.153,1.069,-.151),Vector3(sx*.173,.878,-.164),Vector3(sx*.186,.737,-.142)],.020,"685748")
+        tube_line(root,[Vector3(sx*.168,1.056,-.142),Vector3(sx*.162,.902,-.157),Vector3(sx*.154,.777,-.141)],.010,"887460")
     rounded_box(root,Vector3(0,.872,.188),Vector3(.361,.393,.173),"78694e" if not female else "947b5f")
     rounded_box(root,Vector3(0,.960,.288),Vector3(.311,.079,.029),"5d513d" if not female else "79614e")
     # rolled ground mat on top of the backpack
