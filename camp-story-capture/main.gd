@@ -375,6 +375,132 @@ func adult_camper(at_x: float) -> void:
         ellipsoid(r,Vector3(side*.133,.066,-.091),Vector3(.101,.058,.142),"797768")
         ellipsoid(r,Vector3(side*.133,.022,-.099),Vector3(.107,.017,.153),"ddd3c1")
 
+
+# CAMP STORY v0.1: two compact stylized 3D campers.
+# True procedural Godot meshes, deliberately stylized, not source artwork.
+func camp_kid(at_x: float, female: bool) -> Node3D:
+    var root := Node3D.new()
+    root.position.x = at_x
+    add_child(root)
+    var skin := "edc49f" if not female else "f3ccb0"
+    var jacket := "a5ae83" if not female else "f1ddc4"
+    var jacket_dark := "818a65" if not female else "d5b69c"
+    var pocket := "d3b996" if not female else "dfa79a"
+    var pants := "666853" if not female else "94816b"
+    var shoes := "7b5d47" if not female else "b19a82"
+    var hair := "49352f" if not female else "59433b"
+    var hat := "c7ab87" if not female else "e6c9a5"
+    # Both characters have the same short, sturdy friendly proportions.
+    for side in [-1.0,1.0]:
+        var sx: float = side
+        var lx: float = side*.126
+        tube(root, [
+            [lx,.145,0,.083,.088],
+            [lx,.202,0,.102,.098],
+            [lx,.38,0,.108,.106],
+            [lx,.52,0,.113,.114],
+            [lx,.632,0,.112,.116]
+        ], pants, 28)
+        # high-top ankle boots and soft oval toes
+        ellipsoid(root,Vector3(lx,.158,-.010),Vector3(.106,.12,.113),shoes)
+        ellipsoid(root,Vector3(lx,.092,-.081),Vector3(.118,.088,.149),shoes)
+        ellipsoid(root,Vector3(lx,.036,-.087),Vector3(.124,.025,.159),"dfd3bc")
+        tube_line(root,[
+            Vector3(lx-.039,.172,-.114),
+            Vector3(lx+.041,.172,-.114)
+        ],.0055,"dfc9a9")
+    # Continuous torso/hips profile without separate ball joint.
+    tube(root,[
+        [0,.555,0,.203,.133],
+        [0,.604,0,.221,.139],
+        [0,.695,0,.235,.147],
+        [0,.860,0,.240,.154],
+        [0,1.005,0,.228,.150],
+        [0,1.083,0,.206,.139],
+        [0,1.13,0,.123,.101]
+    ],jacket,36)
+    # Hem, jacket piping and front zipper
+    tube(root,[[0,.561,0,.220,.143],[0,.593,0,.221,.143]],jacket_dark,36)
+    tube_line(root,[Vector3(0,.595,-.148),Vector3(0,1.104,-.138)],.007,"ede5d3")
+    tube_line(root,[Vector3(.008,.606,-.151),Vector3(.008,1.083,-.141)],.0035,"81745d")
+    ellipsoid(root,Vector3(.008,1.066,-.147),Vector3(.011,.017,.008),"8c765f")
+    # Front panels and stitched pockets
+    for side in [-1.0,1.0]:
+        var sx: float=side
+        # sleeves overlap torso shoulder in a solid-looking transition
+        tube(root,[
+            [sx*.333,.730,.010,.088,.095],
+            [sx*.331,.826,.010,.097,.101],
+            [sx*.317,.944,.008,.104,.107],
+            [sx*.265,1.043,.007,.109,.109],
+            [sx*.198,1.074,.005,.077,.096]
+        ],jacket,26)
+        tube(root,[[sx*.335,.713,.009,.085,.092],[sx*.334,.757,.010,.087,.093]],jacket_dark,26)
+        ellipsoid(root,Vector3(sx*.336,.658,.002),Vector3(.070,.090,.071),skin)
+        # simple thumb from glove cuff, deliberately only 2 hand details
+        ellipsoid(root,Vector3(sx*.272,.666,-.042),Vector3(.031,.051,.029),skin)
+        rounded_box(root,Vector3(sx*.122,.765,-.151),Vector3(.145,.122,.023),pocket)
+        rounded_box(root,Vector3(sx*.121,.829,-.164),Vector3(.151,.031,.031),jacket_dark)
+        rounded_box(root,Vector3(sx*.129,1.003,-.146),Vector3(.081,.064,.018),pocket)
+        ellipsoid(root,Vector3(sx*.233,1.075,-.067),Vector3(.052,.051,.048),jacket)
+    # neck, raised soft collar, beige hoodie inside
+    tube(root,[[0,1.105,0,.081,.079],[0,1.205,0,.074,.075]],skin,24)
+    ellipsoid(root,Vector3(-.098,1.126,-.067),Vector3(.096,.073,.064),jacket_dark)
+    ellipsoid(root,Vector3(.098,1.126,-.067),Vector3(.096,.073,.064),jacket_dark)
+    # Large egg-shaped head with subtle cheek and chin taper
+    ellipsoid(root,Vector3(0,1.510,.004),Vector3(.255,.267,.224),skin)
+    ellipsoid(root,Vector3(0,1.381,-.022),Vector3(.186,.115,.189),skin)
+    # tidy side ears partly tucked behind hair and hat
+    for side in [-1.0,1.0]:
+        var sx: float=side
+        ellipsoid(root,Vector3(sx*.243,1.480,.010),Vector3(.043,.063,.030),skin)
+        ellipsoid(root,Vector3(sx*.248,1.480,-.010),Vector3(.018,.033,.009),"dba98d")
+        # flat cartoon eyes, slightly inset rather than protruding eyeballs
+        var ex: float=sx*.105
+        ellipsoid(root,Vector3(ex,1.496,-.210),Vector3(.033,.051,.012),"302823")
+        ellipsoid(root,Vector3(ex-.009,1.514,-.222),Vector3(.010,.015,.005),"fff6e9")
+        tube_line(root,[Vector3(ex-sx*.028,1.581,-.189),Vector3(ex+sx*.022,1.581,-.189)],.005,hair)
+        # round peach cheeks
+        ellipsoid(root,Vector3(sx*.160,1.407,-.189),Vector3(.047,.025,.008),"eaa88c" if not female else "e9a19a")
+    ellipsoid(root,Vector3(0,1.439,-.228),Vector3(.014,.010,.009),"d9a28c")
+    tube_line(root,[Vector3(-.037,1.385,-.208),Vector3(0,1.368,-.222),Vector3(.037,1.385,-.208)],.0037,"a26354")
+    # hair cap, visible below hat
+    ellipsoid(root,Vector3(0,1.691,.025),Vector3(.243,.093,.220),hair)
+    for k in range(5):
+        var xx: float = -.173+float(k)*.084
+        ellipsoid(root,Vector3(xx,1.656,-.174),Vector3(.061,.083,.060),hair,Vector3(0,0,.11*float(k-2)))
+    if female:
+        # Short soft bob, not separate spherical pigtails.
+        for side in [-1.0,1.0]:
+            var sx: float=side
+            ellipsoid(root,Vector3(sx*.202,1.427,.042),Vector3(.072,.151,.128),hair,Vector3(0,0,sx*.18))
+            ellipsoid(root,Vector3(sx*.184,1.369,.051),Vector3(.084,.066,.111),hair)
+    else:
+        ellipsoid(root,Vector3(-.154,1.658,-.083),Vector3(.073,.078,.088),hair)
+        ellipsoid(root,Vector3(.151,1.659,-.090),Vector3(.068,.071,.075),hair)
+    # The brim is a separate low silhouette curved cap for a controllable game asset.
+    ellipsoid(root,Vector3(0,1.750,.011),Vector3(.264,.115,.237),hat)
+    ellipsoid(root,Vector3(0,1.708,-.165),Vector3(.274,.042,.138),hat)
+    ellipsoid(root,Vector3(0,1.751,-.238),Vector3(.080,.030,.016),"947f64")
+    # tiny mountain badge on cap
+    tube_line(root,[Vector3(-.033,1.758,-.252),Vector3(-.003,1.776,-.258),Vector3(.025,1.757,-.252)],.006,"f1eadd")
+    # shoulder straps and backpack, modeled behind upper torso.
+    for side in [-1.0,1.0]:
+        var sx: float=side
+        tube_line(root,[Vector3(sx*.153,1.069,-.151),Vector3(sx*.173,.878,-.164),Vector3(sx*.186,.737,-.142)],.020,"685748")
+    rounded_box(root,Vector3(0,.872,.188),Vector3(.361,.393,.173),"78694e" if not female else "947b5f")
+    rounded_box(root,Vector3(0,.960,.288),Vector3(.311,.079,.029),"5d513d" if not female else "79614e")
+    # rolled ground mat on top of the backpack
+    var bedroll := CylinderMesh.new()
+    bedroll.top_radius=.062
+    bedroll.bottom_radius=.062
+    bedroll.height=.35
+    bedroll.radial_segments=22
+    var bed := mesh_node(root,bedroll,"65725d")
+    bed.position=Vector3(0,1.133,.244)
+    bed.rotation_degrees.z=90
+    return root
+
 func _ready() -> void:
     var world := WorldEnvironment.new()
     var env := Environment.new()
@@ -396,11 +522,11 @@ func _ready() -> void:
     fill.light_energy=.12
     add_child(fill)
     rounded_box(self,Vector3(0,-.070,0),Vector3(12,.12,12),"9dbdb0")
-    island_camper(-.67)
-    adult_camper(.67)
+    camp_kid(-.66,false)
+    camp_kid(.66,true)
     camera=Camera3D.new()
     camera.projection=Camera3D.PROJECTION_ORTHOGONAL
-    camera.size=2.27
+    camera.size=2.20
     camera.position=Vector3(0,.95,-4.0)
     add_child(camera)
     camera.look_at(Vector3(0,.94,0))
