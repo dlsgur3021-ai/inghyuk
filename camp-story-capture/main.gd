@@ -411,9 +411,9 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
         ],.0055,"dfc9a9")
     # Covered, smooth jacket body; the filled mesh hides the backpack from frontal view.
     ellipsoid(root,Vector3(0,.835,.007),Vector3(.240,.281,.153),jacket)
-    ellipsoid(root,Vector3(0,.622,.006),Vector3(.224,.071,.146),jacket)
+    ellipsoid(root,Vector3(0,.630,.006),Vector3(.224,.065,.145),jacket)
     # soft hem is narrow; it does not form a bulbous hip.
-    tube(root,[[0,.586,.006,.207,.137],[0,.609,.006,.223,.144]],jacket_dark,36)
+    tube_line(root,[Vector3(-.183,.609,-.084),Vector3(-.10,.592,-.128),Vector3(0,.591,-.145),Vector3(.10,.592,-.128),Vector3(.183,.609,-.084)],.0045,jacket_dark)
     # collar seam and centered, straight zip
     tube_line(root,[Vector3(0,.613,-.155),Vector3(0,1.053,-.147)],.006,"eee2cb")
     tube_line(root,[Vector3(.012,.636,-.156),Vector3(.012,1.044,-.148)],.0028,"957e66")
@@ -422,15 +422,15 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
     for side in [-1.0,1.0]:
         var sx: float=side
         # Soft sloping shoulder, tapering to fitted cuff rather than floating cylinders.
-        ellipsoid(root,Vector3(sx*.255,.970,.010),Vector3(.131,.147,.126),jacket,Vector3(0,0,-sx*.18))
-        ellipsoid(root,Vector3(sx*.327,.826,.012),Vector3(.091,.182,.094),jacket,Vector3(0,0,sx*.07))
+        ellipsoid(root,Vector3(sx*.239,.982,.010),Vector3(.110,.128,.107),jacket,Vector3(0,0,-sx*.17))
+        ellipsoid(root,Vector3(sx*.316,.845,.012),Vector3(.089,.183,.088),jacket,Vector3(0,0,sx*.055))
         ellipsoid(root,Vector3(sx*.339,.720,.013),Vector3(.079,.035,.085),jacket_dark)
         ellipsoid(root,Vector3(sx*.336,.662,.008),Vector3(.066,.081,.069),skin)
         # simple thumb from glove cuff, deliberately only 2 hand details
         ellipsoid(root,Vector3(sx*.272,.666,-.042),Vector3(.031,.051,.029),skin)
-        ellipsoid(root,Vector3(sx*.116,.785,-.142),Vector3(.065,.066,.028),pocket)
-        tube_line(root,[Vector3(sx*.067,.838,-.154),Vector3(sx*.171,.838,-.146)],.005,jacket_dark)
-        ellipsoid(root,Vector3(sx*.128,1.007,-.123),Vector3(.033,.031,.020),pocket)
+        rounded_box(root,Vector3(sx*.118,.764,-.150),Vector3(.103,.087,.010),pocket)
+        tube_line(root,[Vector3(sx*.070,.812,-.159),Vector3(sx*.169,.812,-.159)],.0038,jacket_dark)
+        tube_line(root,[Vector3(sx*.096,1.011,-.150),Vector3(sx*.159,1.011,-.150)],.0035,pocket)
     # neck, raised soft collar, beige hoodie inside
     tube(root,[[0,1.083,0,.081,.079],[0,1.330,0,.080,.079]],skin,24)
     ellipsoid(root,Vector3(-.062,1.113,-.056),Vector3(.068,.039,.060),jacket_dark)
@@ -461,17 +461,29 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
         # Short soft bob, not separate spherical pigtails.
         for side in [-1.0,1.0]:
             var sx: float=side
-            ellipsoid(root,Vector3(sx*.202,1.427,.042),Vector3(.072,.151,.128),hair,Vector3(0,0,sx*.18))
-            ellipsoid(root,Vector3(sx*.184,1.369,.051),Vector3(.084,.066,.111),hair)
+            ellipsoid(root,Vector3(sx*.199,1.452,.051),Vector3(.062,.122,.111),hair,Vector3(0,0,sx*.13))
+            ellipsoid(root,Vector3(sx*.196,1.391,.061),Vector3(.066,.051,.094),hair)
     else:
         ellipsoid(root,Vector3(-.154,1.658,-.083),Vector3(.073,.078,.088),hair)
         ellipsoid(root,Vector3(.151,1.659,-.090),Vector3(.068,.071,.075),hair)
     # The brim is a separate low silhouette curved cap for a controllable game asset.
-    ellipsoid(root,Vector3(0,1.752,.035),Vector3(.262,.109,.232),hat)
-    ellipsoid(root,Vector3(0,1.704,-.135),Vector3(.270,.028,.118),hat)
-    ellipsoid(root,Vector3(0,1.751,-.208),Vector3(.080,.030,.016),"947f64")
+    var crown := CylinderMesh.new()
+    crown.top_radius = .218
+    crown.bottom_radius = .248
+    crown.height = .185
+    crown.radial_segments = 40
+    var crown_mesh := mesh_node(root,crown,hat)
+    crown_mesh.position = Vector3(0,1.757,.026)
+    var brim := CylinderMesh.new()
+    brim.top_radius = .250
+    brim.bottom_radius = .284
+    brim.height = .051
+    brim.radial_segments = 40
+    var brim_mesh := mesh_node(root,brim,hat)
+    brim_mesh.position = Vector3(0,1.669,-.020)
+    rounded_box(root,Vector3(0,1.772,-.218),Vector3(.094,.052,.014),"947f64")
     # tiny mountain badge on cap
-    tube_line(root,[Vector3(-.033,1.758,-.221),Vector3(-.003,1.776,-.226),Vector3(.025,1.757,-.221)],.006,"f1eadd")
+    tube_line(root,[Vector3(-.031,1.764,-.228),Vector3(-.002,1.784,-.231),Vector3(.027,1.764,-.228)],.006,"f1eadd")
     # shoulder straps and backpack, modeled behind upper torso.
     for side in [-1.0,1.0]:
         var sx: float=side
