@@ -270,9 +270,9 @@ func island_camper(at_x: float) -> void:
         ellipsoid(r,Vector3(x,.037,-.091),Vector3(.127,.026,.185),"f8f1e4")
     # Body and smooth jacket sleeve shoulder transitions
     tube(r,[
-        [0,.64,0,.225,.145],
-        [0,.75,0,.245,.146],
-        [0,.88,0,.25,.152],
+        [0,.64,0,.205,.133],
+        [0,.75,0,.228,.137],
+        [0,.88,0,.232,.144],
         [0,1.03,0,.225,.147],
         [0,1.11,0,.188,.133],
         [0,1.17,0,.120,.085]
@@ -290,16 +290,16 @@ func island_camper(at_x: float) -> void:
         ellipsoid(r,Vector3(sx*.316,.688,-.007),Vector3(.063,.094,.068),cream)
         # jetted side pockets
         tube_line(r,[Vector3(sx*.118,.805,-.146),Vector3(sx*.20,.795,-.131)],.006,"77896d")
-    ellipsoid(r,Vector3(0,1.14,0),Vector3(.074,.095,.070),cream)
+    ellipsoid(r,Vector3(0,1.172,0),Vector3(.074,.079,.070),cream)
     # Head shaped as a large compact sculpt, short chin and pronounced cheeks
     ellipsoid(r,Vector3(0,1.475,0),Vector3(.249,.257,.224),cream)
-    ellipsoid(r,Vector3(0,1.328,-.075),Vector3(.167,.108,.148),cream)
+    ellipsoid(r,Vector3(0,1.337,-.042),Vector3(.145,.077,.138),cream)
     for side in [-1.0,1.0]:
         var eye_x: float=side*.109
         ellipsoid(r,Vector3(side*.236,1.477,-.002),Vector3(.047,.064,.032),cream)
-        ellipsoid(r,Vector3(eye_x,1.485,-.203),Vector3(.055,.065,.022),"fcf9ef")
-        ellipsoid(r,Vector3(eye_x-side*.009,1.479,-.225),Vector3(.027,.037,.010),"493d33")
-        ellipsoid(r,Vector3(eye_x-side*.012,1.480,-.234),Vector3(.013,.021,.007),"211e1d")
+        ellipsoid(r,Vector3(eye_x,1.485,-.203),Vector3(.046,.051,.016),"fcf9ef")
+        ellipsoid(r,Vector3(eye_x-side*.009,1.479,-.225),Vector3(.024,.030,.009),"493d33")
+        ellipsoid(r,Vector3(eye_x-side*.012,1.480,-.234),Vector3(.012,.018,.006),"211e1d")
         ellipsoid(r,Vector3(eye_x-side*.019,1.499,-.241),Vector3(.008,.010,.005),"ffffff")
         tube_line(r,[Vector3(eye_x-side*.035,1.591,-.186),Vector3(eye_x+side*.026,1.593,-.186)],.008,"49362b")
     ellipsoid(r,Vector3(0,1.401,-.219),Vector3(.028,.025,.037),cream)
@@ -309,9 +309,9 @@ func island_camper(at_x: float) -> void:
     for n in range(5):
         var tx: float=-.169+float(n)*.083
         ellipsoid(r,Vector3(tx,1.635,-.175+abs(float(n-2))*.014),
-            Vector3(.071,.066,.058),"4b332a",Vector3(0,0,(float(n)-2.)*.16))
+            Vector3(.055,.052,.048),"4b332a",Vector3(0,0,(float(n)-2.)*.16))
     # Simple boots and color-coded neck scarf
-    ellipsoid(r,Vector3(0,1.145,-.085),Vector3(.128,.047,.057),"e2c8a4")
+    ellipsoid(r,Vector3(0,1.126,-.064),Vector3(.113,.028,.047),"e2c8a4")
 
 # Variant B: full-height adult styled male, soft game-feasible fleece/zip jacket
 func adult_camper(at_x: float) -> void:
