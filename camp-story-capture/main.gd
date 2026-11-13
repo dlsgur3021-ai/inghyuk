@@ -409,46 +409,35 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
             Vector3(lx-.039,.172,-.114),
             Vector3(lx+.041,.172,-.114)
         ],.0055,"dfc9a9")
-    # Continuous torso/hips profile without separate ball joint.
-    tube(root,[
-        [0,.555,0,.203,.133],
-        [0,.604,0,.221,.139],
-        [0,.695,0,.235,.147],
-        [0,.860,0,.240,.154],
-        [0,1.005,0,.228,.150],
-        [0,1.083,0,.206,.139],
-        [0,1.13,0,.123,.101]
-    ],jacket,36)
-    # Hem, jacket piping and front zipper
-    tube(root,[[0,.561,0,.220,.143],[0,.593,0,.221,.143]],jacket_dark,36)
-    tube_line(root,[Vector3(0,.595,-.148),Vector3(0,1.104,-.138)],.007,"ede5d3")
-    tube_line(root,[Vector3(.008,.606,-.151),Vector3(.008,1.083,-.141)],.0035,"81745d")
-    ellipsoid(root,Vector3(.008,1.066,-.147),Vector3(.011,.017,.008),"8c765f")
+    # Covered, smooth jacket body; the filled mesh hides the backpack from frontal view.
+    ellipsoid(root,Vector3(0,.835,.007),Vector3(.240,.281,.153),jacket)
+    ellipsoid(root,Vector3(0,.622,.006),Vector3(.224,.071,.146),jacket)
+    # soft hem is narrow; it does not form a bulbous hip.
+    tube(root,[[0,.586,.006,.207,.137],[0,.609,.006,.223,.144]],jacket_dark,36)
+    # collar seam and centered, straight zip
+    tube_line(root,[Vector3(0,.613,-.155),Vector3(0,1.053,-.147)],.006,"eee2cb")
+    tube_line(root,[Vector3(.012,.636,-.156),Vector3(.012,1.044,-.148)],.0028,"957e66")
+    ellipsoid(root,Vector3(0,1.045,-.151),Vector3(.010,.014,.006),"8c765f")
     # Front panels and stitched pockets
     for side in [-1.0,1.0]:
         var sx: float=side
-        # sleeves overlap torso shoulder in a solid-looking transition
-        tube(root,[
-            [sx*.333,.730,.010,.088,.095],
-            [sx*.331,.826,.010,.097,.101],
-            [sx*.317,.944,.008,.104,.107],
-            [sx*.265,1.043,.007,.109,.109],
-            [sx*.198,1.074,.005,.077,.096]
-        ],jacket,26)
-        tube(root,[[sx*.335,.713,.009,.085,.092],[sx*.334,.757,.010,.087,.093]],jacket_dark,26)
-        ellipsoid(root,Vector3(sx*.336,.658,.002),Vector3(.070,.090,.071),skin)
+        # Soft sloping shoulder, tapering to fitted cuff rather than floating cylinders.
+        ellipsoid(root,Vector3(sx*.255,.970,.010),Vector3(.131,.147,.126),jacket,Vector3(0,0,-sx*.18))
+        ellipsoid(root,Vector3(sx*.327,.826,.012),Vector3(.091,.182,.094),jacket,Vector3(0,0,sx*.07))
+        ellipsoid(root,Vector3(sx*.339,.720,.013),Vector3(.079,.035,.085),jacket_dark)
+        ellipsoid(root,Vector3(sx*.336,.662,.008),Vector3(.066,.081,.069),skin)
         # simple thumb from glove cuff, deliberately only 2 hand details
         ellipsoid(root,Vector3(sx*.272,.666,-.042),Vector3(.031,.051,.029),skin)
-        rounded_box(root,Vector3(sx*.122,.765,-.151),Vector3(.145,.122,.023),pocket)
-        rounded_box(root,Vector3(sx*.121,.829,-.164),Vector3(.151,.031,.031),jacket_dark)
-        rounded_box(root,Vector3(sx*.129,1.003,-.146),Vector3(.081,.064,.018),pocket)
+        ellipsoid(root,Vector3(sx*.116,.785,-.142),Vector3(.065,.066,.028),pocket)
+        tube_line(root,[Vector3(sx*.067,.838,-.154),Vector3(sx*.171,.838,-.146)],.005,jacket_dark)
+        ellipsoid(root,Vector3(sx*.128,1.007,-.123),Vector3(.033,.031,.020),pocket)
     # neck, raised soft collar, beige hoodie inside
     tube(root,[[0,1.083,0,.081,.079],[0,1.330,0,.080,.079]],skin,24)
-    ellipsoid(root,Vector3(-.073,1.124,-.058),Vector3(.069,.042,.058),jacket_dark)
-    ellipsoid(root,Vector3(.073,1.124,-.058),Vector3(.069,.042,.058),jacket_dark)
+    ellipsoid(root,Vector3(-.062,1.113,-.056),Vector3(.068,.039,.060),jacket_dark)
+    ellipsoid(root,Vector3(.062,1.113,-.056),Vector3(.068,.039,.060),jacket_dark)
     # Large egg-shaped head with subtle cheek and chin taper
-    ellipsoid(root,Vector3(0,1.510,.004),Vector3(.255,.267,.224),skin)
-    ellipsoid(root,Vector3(0,1.381,-.022),Vector3(.186,.115,.189),skin)
+    ellipsoid(root,Vector3(0,1.510,.004),Vector3(.246,.260,.218),skin)
+    ellipsoid(root,Vector3(0,1.381,-.022),Vector3(.176,.109,.184),skin)
     # tidy side ears partly tucked behind hair and hat
     for side in [-1.0,1.0]:
         var sx: float=side
@@ -467,7 +456,7 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
     ellipsoid(root,Vector3(0,1.691,.025),Vector3(.243,.093,.220),hair)
     for k in range(5):
         var xx: float = -.173+float(k)*.084
-        ellipsoid(root,Vector3(xx,1.656,-.174),Vector3(.061,.083,.060),hair,Vector3(0,0,.11*float(k-2)))
+        ellipsoid(root,Vector3(xx,1.656,-.174),Vector3(.055,.066,.052),hair,Vector3(0,0,.11*float(k-2)))
     if female:
         # Short soft bob, not separate spherical pigtails.
         for side in [-1.0,1.0]:
@@ -478,17 +467,17 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
         ellipsoid(root,Vector3(-.154,1.658,-.083),Vector3(.073,.078,.088),hair)
         ellipsoid(root,Vector3(.151,1.659,-.090),Vector3(.068,.071,.075),hair)
     # The brim is a separate low silhouette curved cap for a controllable game asset.
-    ellipsoid(root,Vector3(0,1.750,.011),Vector3(.264,.115,.237),hat)
-    ellipsoid(root,Vector3(0,1.708,-.165),Vector3(.274,.042,.138),hat)
-    ellipsoid(root,Vector3(0,1.751,-.238),Vector3(.080,.030,.016),"947f64")
+    ellipsoid(root,Vector3(0,1.752,.035),Vector3(.262,.109,.232),hat)
+    ellipsoid(root,Vector3(0,1.704,-.135),Vector3(.270,.028,.118),hat)
+    ellipsoid(root,Vector3(0,1.751,-.208),Vector3(.080,.030,.016),"947f64")
     # tiny mountain badge on cap
-    tube_line(root,[Vector3(-.033,1.758,-.252),Vector3(-.003,1.776,-.258),Vector3(.025,1.757,-.252)],.006,"f1eadd")
+    tube_line(root,[Vector3(-.033,1.758,-.221),Vector3(-.003,1.776,-.226),Vector3(.025,1.757,-.221)],.006,"f1eadd")
     # shoulder straps and backpack, modeled behind upper torso.
     for side in [-1.0,1.0]:
         var sx: float=side
-        tube_line(root,[Vector3(sx*.168,1.056,-.142),Vector3(sx*.162,.902,-.157),Vector3(sx*.154,.777,-.141)],.010,"887460")
-    rounded_box(root,Vector3(0,.872,.188),Vector3(.361,.393,.173),"78694e" if not female else "947b5f")
-    rounded_box(root,Vector3(0,.960,.288),Vector3(.311,.079,.029),"5d513d" if not female else "79614e")
+        tube_line(root,[Vector3(sx*.168,1.062,-.116),Vector3(sx*.182,.902,-.145),Vector3(sx*.159,.777,-.131)],.010,"887460")
+    rounded_box(root,Vector3(0,.872,.287),Vector3(.349,.376,.166),"78694e" if not female else "947b5f")
+    rounded_box(root,Vector3(0,.960,.390),Vector3(.301,.078,.031),"5d513d" if not female else "79614e")
     # rolled ground mat on top of the backpack
     var bedroll := CylinderMesh.new()
     bedroll.top_radius=.062
@@ -496,7 +485,7 @@ func camp_kid(at_x: float, female: bool) -> Node3D:
     bedroll.height=.35
     bedroll.radial_segments=22
     var bed := mesh_node(root,bedroll,"65725d")
-    bed.position=Vector3(0,1.133,.244)
+    bed.position=Vector3(0,1.128,.355)
     bed.rotation_degrees.z=90
     return root
 
@@ -504,23 +493,23 @@ func _ready() -> void:
     var world := WorldEnvironment.new()
     var env := Environment.new()
     env.background_mode=Environment.BG_COLOR
-    env.background_color=Color("d3d2cf")
+    env.background_color=Color("e9e8e3")
     env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
     env.ambient_light_color=Color("ffffff")
-    env.ambient_light_energy=.30
+    env.ambient_light_energy=.59
     env.tonemap_mode=Environment.TONE_MAPPER_LINEAR
     world.environment=env
     add_child(world)
     var sun := DirectionalLight3D.new()
     sun.rotation_degrees=Vector3(-52,-25,0)
-    sun.light_energy=.37
+    sun.light_energy=.68
     sun.shadow_enabled=true
     add_child(sun)
     var fill := DirectionalLight3D.new()
     fill.rotation_degrees=Vector3(-28,140,0)
-    fill.light_energy=.12
+    fill.light_energy=.29
     add_child(fill)
-    rounded_box(self,Vector3(0,-.070,0),Vector3(12,.12,12),"9dbdb0")
+    rounded_box(self,Vector3(0,-.070,0),Vector3(12,.12,12),"c6d7c9")
     camp_kid(-.66,false)
     camp_kid(.66,true)
     camera=Camera3D.new()
@@ -536,7 +525,7 @@ func _process(_delta: float) -> void:
     if frame_idx == 40:
         capture("res://renders/camp_front.png")
     if frame_idx == 58:
-        camera.position=Vector3(1.50,1.12,-4.0)
+        camera.position=Vector3(2.5,1.18,-3.4)
         camera.look_at(Vector3(0,.96,0))
     if frame_idx == 96:
         capture("res://renders/camp_three_quarter.png")
