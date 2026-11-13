@@ -1,213 +1,302 @@
 extends Node3D
 
-# Real runtime mesh scene. Cameras capture the same assets that run in Godot.
-var cam: Camera3D
-var ticks := 0
-var male: Node3D
-var female: Node3D
-var mats: Dictionary = {}
+# The proportions below are reconstructed from the original Camp Story human sheet.
+# No sphere-bodied replacement characters. Only the face uses the supplied Western-animation reference.
+var camera: Camera3D
+var frame_idx := 0
+var palette: Dictionary = {}
 
-func mat(hex: String, rough := 0.87) -> StandardMaterial3D:
-    var key := hex + str(rough)
-    if mats.has(key):
-        return mats[key]
+func material(hex: String, spec: float = .14) -> StandardMaterial3D:
+    var key := hex + "/" + str(spec)
+    if palette.has(key):
+        return palette[key]
     var m := StandardMaterial3D.new()
     m.albedo_color = Color(hex)
-    m.roughness = rough
-    mats[key] = m
+    m.metallic = 0.0
+    m.roughness = .90 - spec * .35
+    palette[key] = m
     return m
 
-func ball(parent: Node3D, pos: Vector3, scale3: Vector3, color: String, rotation3 := Vector3.ZERO) -> MeshInstance3D:
+func mesh_node(parent: Node3D, mesh: Mesh, color: String) -> MeshInstance3D:
     var mi := MeshInstance3D.new()
-    var sphere := SphereMesh.new()
-    sphere.radius = 1.0
-    sphere.height = 2.0
-    sphere.radial_segments = 32
-    sphere.rings = 20
-    mi.mesh = sphere
-    mi.material_override = mat(color)
-    mi.position = pos
-    mi.scale = scale3
-    mi.rotation = rotation3
-    parent.add_child(mi)
-    return mi
-
-func bar(parent: Node3D, a: Vector3, b: Vector3, low: float, high: float, color: String) -> MeshInstance3D:
-    var mi := MeshInstance3D.new()
-    var cylinder := CylinderMesh.new()
-    cylinder.bottom_radius = low
-    cylinder.top_radius = high
-    cylinder.height = a.distance_to(b)
-    cylinder.radial_segments = 16
-    mi.mesh = cylinder
-    mi.material_override = mat(color)
-    mi.position = (a + b) * 0.5
-    mi.basis = Basis(Quaternion(Vector3.UP, (b-a).normalized()))
-    parent.add_child(mi)
-    return mi
-
-func box(parent: Node3D, pos: Vector3, dims: Vector3, color: String) -> MeshInstance3D:
-    var mi := MeshInstance3D.new()
-    var mesh := BoxMesh.new()
-    mesh.size = dims
     mi.mesh = mesh
-    mi.material_override = mat(color)
-    mi.position = pos
+    mi.material_override = material(color)
     parent.add_child(mi)
     return mi
 
-func tiny_smile(parent: Node3D, female_style: bool) -> void:
-    var points = [
-        Vector3(-0.090, 2.345, 0.309),
-        Vector3(-0.045, 2.328, 0.329),
-        Vector3(0.000, 2.324, 0.335),
-        Vector3(0.045, 2.328, 0.329),
-        Vector3(0.090, 2.345, 0.309)
-    ]
-    for i in range(points.size()-1):
-        bar(parent, points[i], points[i+1], 0.008, 0.008, "795d53" if not female_style else "91615d")
+func ellipsoid(parent: Node3D, p: Vector3, radii: Vector3, color: String, angle: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+    var sm := SphereMesh.new()
+    sm.radial_segments = 32
+    sm.rings = 20
+    var mi := mesh_node(parent, sm, color)
+    mi.position = p
+    mi.scale = radii
+    mi.rotation = angle
+    return mi
 
-func build_face(parent: Node3D, is_female: bool) -> void:
-    var skin := "e9bc9d" if is_female else "d7aa8f"
-    var blush := "dfaaa0" if is_female else "c99483"
-    var hair := "3e3030" if is_female else "392c28"
-    var brow := "43332f"
-    var face_width := 0.299 if is_female else 0.326
-    # Head is a hand-tuned sculptural arrangement, not an anime texture.
-    ball(parent, Vector3(0, 2.515, 0), Vector3(face_width, 0.393, 0.280), skin)
-    ball(parent, Vector3(0, 2.340, 0.087), Vector3(face_width*0.80, 0.173, 0.210), skin)
-    ball(parent, Vector3(0, 2.310, 0.120), Vector3(0.184, 0.073, 0.160), skin)
-    for sx in [-1.0, 1.0]:
-        ball(parent, Vector3(sx*face_width*0.95, 2.495, -0.005),
-            Vector3(0.063, 0.099, 0.044), skin)
-        # small, natural 3D eyes with sclera, iris and pupil
-        var ex: float = sx*(0.126 if is_female else 0.138)
-        ball(parent, Vector3(ex, 2.548, 0.264), Vector3(0.044, 0.033, 0.019), "eee4d7")
-        ball(parent, Vector3(ex-sx*0.004, 2.548, 0.282), Vector3(0.024, 0.027, 0.010), "5c4332")
-        ball(parent, Vector3(ex-sx*0.004, 2.548, 0.294), Vector3(0.013, 0.019, 0.007), "272321")
-        ball(parent, Vector3(ex-sx*0.012, 2.557, 0.301), Vector3(0.005, 0.006, 0.003), "fff9e4")
-        ball(parent, Vector3(ex, 2.640, 0.257),
-            Vector3(0.077, 0.013, 0.012), brow, Vector3(0,0,sx*(0.09 if is_female else 0.13)))
-        ball(parent, Vector3(sx*0.196,2.430,0.212), Vector3(0.044,0.020,0.011), skin)
-    # Protruding nose with subtly curved bridge and rounded tip.
-    ball(parent, Vector3(0,2.460,0.283),Vector3(0.035,0.072,0.048),skin)
-    ball(parent, Vector3(0,2.426,0.322),Vector3(0.042,0.031,0.034),skin)
-    tiny_smile(parent, is_female)
-    # Built 3D hair volume and separate tapered locks.
-    ball(parent, Vector3(0,2.789,-0.055),Vector3(face_width+0.033,0.214,0.308),hair)
-    ball(parent, Vector3(-0.250,2.685,-0.090),Vector3(0.101,0.200,0.225),hair)
-    ball(parent, Vector3(0.251,2.684,-0.080),Vector3(0.098,0.194,0.221),hair)
+func tube(parent: Node3D, path: Array, color: String, sides: int = 28) -> MeshInstance3D:
+    # Each section: [center_x, center_y, center_z, radius_x, radius_z]
+    var st := SurfaceTool.new()
+    st.begin(Mesh.PRIMITIVE_TRIANGLES)
+    for k in range(path.size() - 1):
+        var a: Array = path[k]
+        var b: Array = path[k + 1]
+        for i in range(sides):
+            var q0 := TAU * float(i) / sides
+            var q1 := TAU * float(i + 1) / sides
+            var verts: Array[Vector3] = [
+                Vector3(float(a[0]) + cos(q0)*float(a[3]), float(a[1]), float(a[2])+sin(q0)*float(a[4])),
+                Vector3(float(b[0]) + cos(q0)*float(b[3]), float(b[1]), float(b[2])+sin(q0)*float(b[4])),
+                Vector3(float(a[0]) + cos(q1)*float(a[3]), float(a[1]), float(a[2])+sin(q1)*float(a[4])),
+                Vector3(float(b[0]) + cos(q1)*float(b[3]), float(b[1]), float(b[2])+sin(q1)*float(b[4]))
+            ]
+            for index in [0, 1, 2, 2, 1, 3]:
+                st.add_vertex(verts[index])
+    st.generate_normals()
+    return mesh_node(parent, st.commit(), color)
+
+func tube_line(parent: Node3D, points: Array[Vector3], radius: float, color: String) -> void:
+    for i in range(points.size() - 1):
+        var first := points[i]
+        var second := points[i+1]
+        var v := second - first
+        var c := CylinderMesh.new()
+        c.top_radius = radius
+        c.bottom_radius = radius
+        c.height = v.length()
+        c.radial_segments = 10
+        var mi := mesh_node(parent, c, color)
+        mi.position = (first+second)*.5
+        mi.quaternion = Quaternion(Vector3.UP, v.normalized())
+        ellipsoid(parent,second,Vector3(radius,radius,radius),color)
+
+func rounded_box(parent: Node3D, at: Vector3, dim: Vector3, color: String) -> void:
+    var m := BoxMesh.new()
+    m.size=dim
+    var mi := mesh_node(parent,m,color)
+    mi.position=at
+
+func face(parent: Node3D, is_female: bool) -> void:
+    var skin := "efc4a5" if not is_female else "f1cab3"
+    var skin_shadow := "d6a18b" if not is_female else "e4b09d"
+    var hair := "262223"
+    var eyebrow := "3a2c27"
+    var eye_white := "f8f2e9"
+    var iris := "795638" if not is_female else "654b38"
+    var face_w := .111 if not is_female else .105
+    # Long continuous sculpted mesh. Crown is wider than jaw, jaw converges softly.
+    tube(parent,[
+        [0,1.445,0.006,.019,.016],
+        [0,1.466,0,.055,.053],
+        [0,1.493,0,.085,.080],
+        [0,1.540,0,.105,.097],
+        [0,1.589,0,face_w,.104],
+        [0,1.636,0,face_w,.105],
+        [0,1.681,.002,.103,.094],
+        [0,1.714,.012,.083,.070],
+        [0,1.736,.014,.050,.041],
+        [0,1.744,.015,.012,.010]
+    ],skin,36)
+    # Soft cheeks, connected visually with head; fine visible ears and jaw definition.
+    for side in [-1.0,1.0]:
+        ellipsoid(parent,Vector3(side*face_w*.92,1.591,.005),
+            Vector3(.021,.042,.022),skin)
+        var eye_x: float=side*.051
+        # Forward is -Z for the current orthographic camera.
+        ellipsoid(parent,Vector3(eye_x,1.624,-.102),
+            Vector3(.029,.020,.006),eye_white)
+        ellipsoid(parent,Vector3(eye_x-side*.002,1.624,-.109),
+            Vector3(.014,.016,.004),iris)
+        ellipsoid(parent,Vector3(eye_x-side*.003,1.624,-.114),
+            Vector3(.008,.010,.003),"251d1a")
+        ellipsoid(parent,Vector3(eye_x-side*.007,1.631,-.117),
+            Vector3(.004,.004,.002),"ffffff")
+        # Strong brows from Western character reference; no anime eyeliner.
+        tube_line(parent,[
+            Vector3(eye_x-side*.025,1.659,-.092),
+            Vector3(eye_x,1.664,-.102),
+            Vector3(eye_x+side*.025,1.657,-.089)
+        ],.006,eyebrow)
+        ellipsoid(parent,Vector3(side*.085,1.555,-.066),
+            Vector3(.010,.009,.008),skin_shadow)
+    # Rounded bridge and nose tip, thin under lip instead of a huge pasted mouth.
+    ellipsoid(parent,Vector3(0,1.594,-.107),
+        Vector3(.016,.033,.016),skin)
+    ellipsoid(parent,Vector3(0,1.573,-.120),
+        Vector3(.027,.016,.023),skin)
+    tube_line(parent,[
+        Vector3(-.046,1.526,-.083),
+        Vector3(-.030,1.516,-.101),
+        Vector3(0,1.510,-.106),
+        Vector3(.030,1.516,-.101),
+        Vector3(.046,1.526,-.083)
+    ],.0038,"835047")
+    # Very small natural smile teeth, not a big cartoon mouth
+    ellipsoid(parent,Vector3(0,1.516,-.110),
+        Vector3(.019,.004,.002),"fff5ec")
+    tube_line(parent,[
+        Vector3(-.022,1.506,-.100),
+        Vector3(0,1.503,-.106),
+        Vector3(.022,1.506,-.100)
+    ],.0021,"cc8f7e")
+    # Existing hairstyle remains short black for man; ponytail for woman.
+    tube(parent,[
+        [0,1.689,.017,.086,.076],
+        [0,1.716,.014,.105,.105],
+        [0,1.749,.012,.107,.108],
+        [0,1.768,.010,.086,.094],
+        [0,1.780,.008,.040,.049]
+    ],hair,36)
+    # angled fringe, organic locks embedded in scalp
+    for i in range(7):
+        var tx: float=-.080+i*.026
+        var yy: float=1.703+sin(float(i)*1.6)*.011
+        ellipsoid(parent,Vector3(tx,yy,-.085),
+            Vector3(.028,.015,.024),hair,Vector3(0,0,-.22+i*.07))
     if is_female:
-        for k in range(5):
-            var xp: float = -0.245 + k*0.103
-            var yp: float = 2.777 - abs(k-2)*0.024
-            ball(parent, Vector3(xp,yp,0.213),Vector3(0.075,0.055,0.072),hair,
-                Vector3(0,0,-0.19+k*0.06))
-        ball(parent, Vector3(0.215,2.807,-0.251),Vector3(0.103,0.100,0.111),hair)
-        ball(parent, Vector3(0.286,2.580,-0.300),Vector3(0.092,0.282,0.120),hair,
-            Vector3(0,0,-0.23))
-        ball(parent, Vector3(0.305,2.386,-0.332),Vector3(0.077,0.189,0.106),hair,
-            Vector3(0,0,-0.26))
-    else:
-        for k in range(5):
-            var xp: float = -0.25 + k*0.125
-            var yp: float = 2.789 - abs(k-1)*0.030
-            ball(parent, Vector3(xp, yp,0.220),Vector3(0.090,0.064,0.074),hair,
-                Vector3(0,0,-0.14 + k*0.13))
-        ball(parent,Vector3(-0.230,2.767,0.043),Vector3(0.110,0.142,0.202),hair)
+        # tied low ponytail, hanging behind right shoulder
+        ellipsoid(parent,Vector3(.079,1.677,.094),
+            Vector3(.038,.042,.039),hair)
+        tube(parent,[
+            [.086,1.688,.118,.026,.029],
+            [.091,1.622,.136,.041,.032],
+            [.104,1.530,.145,.040,.032],
+            [.108,1.452,.149,.029,.026],
+            [.110,1.419,.150,.009,.010]
+        ],hair,20)
 
-func create_character(xoffset: float, is_female: bool) -> Node3D:
-    var character := Node3D.new()
-    character.position.x = xoffset
-    add_child(character)
-    var cloth := "c4bbb1" if is_female else "a49d91"
-    var cloth_dark := "b4a69a" if is_female else "918c83"
-    var pants := "465260" if is_female else "2f3c4b"
-    var shoes := "e0dbcd" if is_female else "d8d4c9"
-    var skin := "e9bc9d" if is_female else "d7aa8f"
-    var v := 0.96 if is_female else 1.0
-    character.scale = Vector3(v, v, v)
-    # neck / hood / adult-proportioned torso
-    ball(character, Vector3(0,2.130,0),Vector3(0.092,0.160,0.097),skin)
-    ball(character, Vector3(0,1.762,0.0), Vector3(0.391 if not is_female else 0.352,0.468,0.242),cloth)
-    ball(character, Vector3(0,1.875,-0.120), Vector3(0.345,0.244,0.181),cloth_dark)
-    ball(character,Vector3(0,2.072,0.023),Vector3(0.169,0.088,0.150),cloth_dark)
-    bar(character,Vector3(0,1.995,0.228),Vector3(0,1.818,0.240),0.006,0.006,"e6d9c7")
-    # front kangaroo pocket seam
-    ball(character,Vector3(0,1.564,0.216),Vector3(0.210,0.102,0.012),cloth_dark)
-    # arms: sleeves, cuffs, hands in relaxed natural placement
-    for sx in [-1.0,1.0]:
-        var shoulder := Vector3(sx*(0.374 if is_female else 0.411),1.987,0)
-        var elbow := Vector3(sx*(0.438 if is_female else 0.477),1.529,0.026)
-        var wrist := Vector3(sx*(0.449 if is_female else 0.491),1.267,0.075)
-        ball(character,shoulder,Vector3(0.124,0.135,0.145),cloth)
-        bar(character,shoulder,elbow,0.127,0.103,cloth)
-        ball(character,elbow,Vector3(0.101,0.103,0.107),cloth)
-        bar(character,elbow,wrist,0.103,0.091,cloth)
-        ball(character,wrist,Vector3(0.105,0.062,0.106),cloth_dark)
-        ball(character,wrist+Vector3(0,-0.116,0.016),Vector3(0.081,0.111,0.066),skin)
-        for f in range(3):
-            ball(character,wrist+Vector3(sx*(f*0.025-0.024),-0.202,0.032),
-                Vector3(0.021,0.049,0.031),skin)
-    # hips and legs
-    ball(character,Vector3(0,1.300,0),Vector3(0.307 if is_female else 0.330,0.188,0.208),pants)
-    for sx in [-1.0,1.0]:
-        var hx: float = sx*0.180
-        var knee := Vector3(sx*0.189,0.715,0.012)
-        var ankle := Vector3(sx*0.199,0.197,-0.004)
-        bar(character,Vector3(hx,1.307,0),knee,0.163,0.137,pants)
-        ball(character,knee,Vector3(0.127,0.136,0.130),pants)
-        bar(character,knee,ankle,0.130,0.099,pants)
-        ball(character,Vector3(sx*0.201,0.204,0.014),Vector3(0.108,0.099,0.110),pants)
-        ball(character,Vector3(sx*0.199,0.124,0.117),Vector3(0.121,0.080,0.201),shoes)
-        box(character,Vector3(sx*0.199,0.054,0.130),Vector3(0.245,0.040,0.381),"ede9df")
-    build_face(character,is_female)
-    return character
+func person(offset: float, is_female: bool) -> Node3D:
+    var root := Node3D.new()
+    root.position.x=offset
+    root.scale=Vector3(.93,.93,.93) if is_female else Vector3.ONE
+    add_child(root)
+    var shirt := "a9c0ad" if is_female else "f0ede6"
+    var shirt_shadow := "93ac99" if is_female else "d9d7cf"
+    var pant := "4b586d" if is_female else "4c5b4e"
+    var pant_seam := "647184" if is_female else "5c6c5c"
+    var skin := "f1cab3" if is_female else "efc4a5"
+    var sock := "f4f2e9"
+    # continuous loose T-shirt, exact soft half-sleeve look from original render
+    tube(root,[
+        [0,.958,0,.183,.109],
+        [0,.982,0,.197,.121],
+        [0,1.050,0,.203,.127],
+        [0,1.163,0,.196,.124],
+        [0,1.295,0,.187,.108],
+        [0,1.342,0,.208,.103],
+        [0,1.366,0,.174,.096],
+        [0,1.381,0,.092,.079]
+    ],shirt)
+    # neck exposed from collar to head
+    tube(root,[
+        [0,1.364,0,.055,.052],
+        [0,1.407,0,.054,.051],
+        [0,1.473,0,.049,.047]
+    ],skin)
+    for side in [-1.0,1.0]:
+        var x: float=side*.222
+        tube(root,[
+            [side*.228,1.350,0,.086,.106],
+            [side*.237,1.320,0,.093,.111],
+            [side*.250,1.245,0,.085,.102],
+            [side*.255,1.210,0,.081,.096]
+        ],shirt,24)
+        tube(root,[
+            [side*.257,1.206,0,.068,.065],
+            [side*.265,1.124,.003,.064,.063],
+            [side*.282,1.020,.003,.053,.056],
+            [side*.292,.936,.008,.043,.045],
+            [side*.298,.892,.012,.035,.038]
+        ],skin,24)
+        # simplified small hands with finger detail
+        ellipsoid(root,Vector3(side*.301,.858,.016),
+            Vector3(.030,.045,.033),skin)
+        for fi in range(3):
+            ellipsoid(root,Vector3(side*(.281+fi*.015),.825,-.002),
+                Vector3(.006,.030,.006),skin)
+    # Straight waistband and baggy jogger-style trouser legs: no ball joints.
+    tube(root,[
+        [0,.914,0,.208,.138],
+        [0,.949,0,.216,.135],
+        [0,.979,0,.210,.129]
+    ],pant,30)
+    for side in [-1.0,1.0]:
+        x=side*.109
+        tube(root,[
+            [x,.936,0,.118,.135],
+            [side*.114,.877,0,.126,.139],
+            [side*.119,.749,.003,.136,.146],
+            [side*.120,.620,.008,.139,.145],
+            [side*.123,.463,.010,.134,.141],
+            [side*.125,.301,.014,.127,.133],
+            [side*.128,.199,.011,.120,.123],
+            [side*.129,.152,.009,.096,.108]
+        ],pant,30)
+        # cuff narrow hem and visible white sock
+        tube(root,[
+            [side*.130,.157,.005,.093,.101],
+            [side*.132,.131,.006,.092,.101]
+        ],pant_seam,30)
+        tube(root,[
+            [side*.132,.130,.006,.059,.070],
+            [side*.132,.075,.011,.060,.070]
+        ],sock,24)
+        # egg-shaped canvas sneaker and sole, very close to original illustration
+        ellipsoid(root,Vector3(side*.134,.068,-.055),
+            Vector3(.087,.060,.155),"dad9d1")
+        ellipsoid(root,Vector3(side*.133,.028,-.063),
+            Vector3(.098,.020,.165),"fafaf5")
+    # drawstrings and flat seam
+    tube_line(root,[Vector3(-.026,.972,-.128),Vector3(-.028,.922,-.144)],.0035,"e1e0d4")
+    tube_line(root,[Vector3(.026,.972,-.128),Vector3(.025,.914,-.144)],.0035,"e1e0d4")
+    face(root,is_female)
+    return root
 
 func _ready() -> void:
-    var env := WorldEnvironment.new()
-    var e := Environment.new()
-    e.background_mode = Environment.BG_COLOR
-    e.background_color = Color("aeb6b3")
-    e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-    e.ambient_light_color = Color("ffffff")
-    e.ambient_light_energy = 0.34
-    e.tonemap_mode = Environment.TONE_MAPPER_LINEAR
-    env.environment = e
-    add_child(env)
-    var sunlight := DirectionalLight3D.new()
-    sunlight.rotation_degrees = Vector3(-48,-40,0)
-    sunlight.light_energy = 0.55
-    sunlight.shadow_enabled = true
-    add_child(sunlight)
+    var world := WorldEnvironment.new()
+    var env := Environment.new()
+    env.background_mode=Environment.BG_COLOR
+    env.background_color=Color("d3d2cf")
+    env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
+    env.ambient_light_color=Color("ffffff")
+    env.ambient_light_energy=.66
+    env.tonemap_mode=Environment.TONE_MAPPER_LINEAR
+    world.environment=env
+    add_child(world)
+    var sun := DirectionalLight3D.new()
+    sun.rotation_degrees=Vector3(-52,-25,0)
+    sun.light_energy=.58
+    sun.shadow_enabled=true
+    add_child(sun)
     var fill := DirectionalLight3D.new()
-    fill.rotation_degrees=Vector3(-30,128,0)
-    fill.light_energy=0.13
+    fill.rotation_degrees=Vector3(-28,140,0)
+    fill.light_energy=.20
     add_child(fill)
-    box(self,Vector3(0,-0.086,0),Vector3(30,0.13,30),"939e98")
-    male = create_character(-0.88,false)
-    female = create_character(0.88,true)
-    cam = Camera3D.new()
-    cam.fov=48
-    cam.position=Vector3(0,1.62,5.40)
-    add_child(cam)
-    cam.look_at(Vector3(0,1.52,0))
-    cam.current = true
+    rounded_box(self,Vector3(0,-.070,0),Vector3(12,.12,12),"9dbdb0")
+    person(-.55,false)
+    person(.55,true)
+    camera=Camera3D.new()
+    camera.projection=Camera3D.PROJECTION_ORTHOGONAL
+    camera.size=2.13
+    camera.position=Vector3(0,.95,-4.0)
+    add_child(camera)
+    camera.look_at(Vector3(0,.94,0))
+    camera.current=true
 
 func _process(_delta: float) -> void:
-    ticks += 1
-    if ticks == 45:
-        _snapshot("res://renders/camp_front.png")
-    elif ticks == 58:
-        cam.position = Vector3(1.70,1.70,5.55)
-        cam.look_at(Vector3(0,1.50,0))
-    elif ticks == 92:
-        _snapshot("res://renders/camp_three_quarter.png")
-    elif ticks == 112:
+    frame_idx+=1
+    if frame_idx == 40:
+        capture("res://renders/camp_front.png")
+    if frame_idx == 58:
+        camera.position=Vector3(1.50,1.12,-4.0)
+        camera.look_at(Vector3(0,.96,0))
+    if frame_idx == 96:
+        capture("res://renders/camp_three_quarter.png")
+    if frame_idx == 120:
         get_tree().quit()
 
-func _snapshot(path: String) -> void:
+func capture(where: String) -> void:
     await RenderingServer.frame_post_draw
-    var img := get_viewport().get_texture().get_image()
-    var result := img.save_png(path)
-    print("CAPTURE: ", path, " status=", result)
+    var img=get_viewport().get_texture().get_image()
+    var err=img.save_png(where)
+    print("CAPTURED ",where," ",err)
