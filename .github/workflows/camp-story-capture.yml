@@ -1,0 +1,44 @@
+name: Capture Camp Story in Godot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'camp-story-capture/**'
+      - '.github/workflows/camp-story-capture.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rendering dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb libgl1-mesa-dri libgl1 libxrender1 libxi6 libxrandr2 libxinerama1 libxcursor1
+      - name: Download official Godot 4.4.1
+        run: |
+          curl -fL --retry 3 --output godot.zip "https://downloads.godotengine.org/?version=4.4.1&flavor=stable&platform=linux.64&slug=linux.x86_64.zip"
+          unzip -q godot.zip
+          mv Godot_v4.4.1-stable_linux.x86_64 godot
+          chmod +x godot
+      - name: Run 3D scene and capture actual Godot frame
+        run: |
+          mkdir -p camp-story-capture/renders
+          cd camp-story-capture
+          xvfb-run -a -s "-screen 0 1400x860x24" ../godot --path . --rendering-driver opengl3 --quit-after 145 --verbose
+          test -s renders/camp_front.png
+          test -s renders/camp_three_quarter.png
+          file renders/*.png
+      - name: Save captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CampStory-Godot-Captures
+          path: camp-story-capture/renders/*.png
+          if-no-files-found: warn
