@@ -76,22 +76,22 @@ func build_face(parent: Node3D, is_female: bool) -> void:
     # Head is a hand-tuned sculptural arrangement, not an anime texture.
     ball(parent, Vector3(0, 2.515, 0), Vector3(face_width, 0.393, 0.280), skin)
     ball(parent, Vector3(0, 2.340, 0.087), Vector3(face_width*0.80, 0.173, 0.210), skin)
-    ball(parent, Vector3(0, 2.310, 0.120), Vector3(0.190, 0.089, 0.180), skin)
+    ball(parent, Vector3(0, 2.310, 0.120), Vector3(0.184, 0.073, 0.160), skin)
     for sx in [-1.0, 1.0]:
         ball(parent, Vector3(sx*face_width*0.95, 2.495, -0.005),
             Vector3(0.063, 0.099, 0.044), skin)
         # small, natural 3D eyes with sclera, iris and pupil
         var ex: float = sx*(0.126 if is_female else 0.138)
-        ball(parent, Vector3(ex, 2.548, 0.258), Vector3(0.058, 0.047, 0.032), "eee4d7")
-        ball(parent, Vector3(ex-sx*0.004, 2.548, 0.290), Vector3(0.029, 0.034, 0.017), "5c4332")
-        ball(parent, Vector3(ex-sx*0.004, 2.548, 0.307), Vector3(0.016, 0.026, 0.009), "272321")
-        ball(parent, Vector3(ex-sx*0.012, 2.558, 0.315), Vector3(0.007, 0.009, 0.004), "fff9e4")
+        ball(parent, Vector3(ex, 2.548, 0.264), Vector3(0.044, 0.033, 0.019), "eee4d7")
+        ball(parent, Vector3(ex-sx*0.004, 2.548, 0.282), Vector3(0.024, 0.027, 0.010), "5c4332")
+        ball(parent, Vector3(ex-sx*0.004, 2.548, 0.294), Vector3(0.013, 0.019, 0.007), "272321")
+        ball(parent, Vector3(ex-sx*0.012, 2.557, 0.301), Vector3(0.005, 0.006, 0.003), "fff9e4")
         ball(parent, Vector3(ex, 2.640, 0.257),
-            Vector3(0.089, 0.017, 0.021), brow, Vector3(0,0,sx*(0.09 if is_female else 0.13)))
-        ball(parent, Vector3(sx*0.205,2.434,0.211), Vector3(0.069,0.036,0.025), blush)
+            Vector3(0.077, 0.013, 0.012), brow, Vector3(0,0,sx*(0.09 if is_female else 0.13)))
+        ball(parent, Vector3(sx*0.196,2.430,0.212), Vector3(0.044,0.020,0.011), skin)
     # Protruding nose with subtly curved bridge and rounded tip.
-    ball(parent, Vector3(0,2.461,0.291),Vector3(0.049,0.085,0.078),skin)
-    ball(parent, Vector3(0,2.433,0.350),Vector3(0.065,0.047,0.054),skin)
+    ball(parent, Vector3(0,2.460,0.283),Vector3(0.035,0.072,0.048),skin)
+    ball(parent, Vector3(0,2.426,0.322),Vector3(0.042,0.031,0.034),skin)
     tiny_smile(parent, is_female)
     # Built 3D hair volume and separate tapered locks.
     ball(parent, Vector3(0,2.789,-0.055),Vector3(face_width+0.033,0.214,0.308),hair)
@@ -101,7 +101,7 @@ func build_face(parent: Node3D, is_female: bool) -> void:
         for k in range(5):
             var xp: float = -0.245 + k*0.103
             var yp: float = 2.777 - abs(k-2)*0.024
-            ball(parent, Vector3(xp,yp,0.213),Vector3(0.078,0.105,0.078),hair,
+            ball(parent, Vector3(xp,yp,0.213),Vector3(0.075,0.055,0.072),hair,
                 Vector3(0,0,-0.19+k*0.06))
         ball(parent, Vector3(0.215,2.807,-0.251),Vector3(0.103,0.100,0.111),hair)
         ball(parent, Vector3(0.286,2.580,-0.300),Vector3(0.092,0.282,0.120),hair,
@@ -112,7 +112,7 @@ func build_face(parent: Node3D, is_female: bool) -> void:
         for k in range(5):
             var xp: float = -0.25 + k*0.125
             var yp: float = 2.789 - abs(k-1)*0.030
-            ball(parent, Vector3(xp, yp,0.220),Vector3(0.092,0.089,0.091),hair,
+            ball(parent, Vector3(xp, yp,0.220),Vector3(0.090,0.064,0.074),hair,
                 Vector3(0,0,-0.14 + k*0.13))
         ball(parent,Vector3(-0.230,2.767,0.043),Vector3(0.110,0.142,0.202),hair)
 
@@ -134,15 +134,15 @@ func create_character(xoffset: float, is_female: bool) -> Node3D:
     ball(character,Vector3(0,2.072,0.023),Vector3(0.169,0.088,0.150),cloth_dark)
     bar(character,Vector3(0,1.995,0.228),Vector3(0,1.818,0.240),0.006,0.006,"e6d9c7")
     # front kangaroo pocket seam
-    ball(character,Vector3(0,1.564,0.216),Vector3(0.226,0.140,0.022),cloth_dark)
+    ball(character,Vector3(0,1.564,0.216),Vector3(0.210,0.102,0.012),cloth_dark)
     # arms: sleeves, cuffs, hands in relaxed natural placement
     for sx in [-1.0,1.0]:
         var shoulder := Vector3(sx*(0.374 if is_female else 0.411),1.987,0)
         var elbow := Vector3(sx*(0.438 if is_female else 0.477),1.529,0.026)
         var wrist := Vector3(sx*(0.449 if is_female else 0.491),1.267,0.075)
-        ball(character,shoulder,Vector3(0.155,0.168,0.165),cloth)
+        ball(character,shoulder,Vector3(0.124,0.135,0.145),cloth)
         bar(character,shoulder,elbow,0.127,0.103,cloth)
-        ball(character,elbow,Vector3(0.111,0.120,0.116),cloth)
+        ball(character,elbow,Vector3(0.101,0.103,0.107),cloth)
         bar(character,elbow,wrist,0.103,0.091,cloth)
         ball(character,wrist,Vector3(0.105,0.062,0.106),cloth_dark)
         ball(character,wrist+Vector3(0,-0.116,0.016),Vector3(0.081,0.111,0.066),skin)
@@ -150,17 +150,17 @@ func create_character(xoffset: float, is_female: bool) -> Node3D:
             ball(character,wrist+Vector3(sx*(f*0.025-0.024),-0.202,0.032),
                 Vector3(0.021,0.049,0.031),skin)
     # hips and legs
-    ball(character,Vector3(0,1.300,0),Vector3(0.330 if is_female else 0.345,0.228,0.230),pants)
+    ball(character,Vector3(0,1.300,0),Vector3(0.307 if is_female else 0.330,0.188,0.208),pants)
     for sx in [-1.0,1.0]:
         var hx: float = sx*0.180
         var knee := Vector3(sx*0.189,0.715,0.012)
         var ankle := Vector3(sx*0.199,0.197,-0.004)
         bar(character,Vector3(hx,1.307,0),knee,0.163,0.137,pants)
-        ball(character,knee,Vector3(0.139,0.144,0.141),pants)
+        ball(character,knee,Vector3(0.127,0.136,0.130),pants)
         bar(character,knee,ankle,0.130,0.099,pants)
         ball(character,Vector3(sx*0.201,0.204,0.014),Vector3(0.108,0.099,0.110),pants)
-        ball(character,Vector3(sx*0.199,0.124,0.117),Vector3(0.136,0.091,0.240),shoes)
-        box(character,Vector3(sx*0.199,0.054,0.130),Vector3(0.275,0.055,0.436),"ede9df")
+        ball(character,Vector3(sx*0.199,0.124,0.117),Vector3(0.121,0.080,0.201),shoes)
+        box(character,Vector3(sx*0.199,0.054,0.130),Vector3(0.245,0.040,0.381),"ede9df")
     build_face(character,is_female)
     return character
 
