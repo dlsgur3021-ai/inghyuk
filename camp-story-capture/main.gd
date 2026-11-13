@@ -94,97 +94,70 @@ func rounded_box(parent: Node3D, at: Vector3, dim: Vector3, color: String) -> vo
     var mi := mesh_node(parent,m,color)
     mi.position=at
 
+func head_form(parent: Node3D, skin: String) -> void:
+    # Continuous sculpted head mesh; soft tapered jaw, no flat facial plates.
+    var st := SurfaceTool.new()
+    st.begin(Mesh.PRIMITIVE_TRIANGLES)
+    var rings := 42
+    var slices := 64
+    for i in range(rings):
+        var a0: float = PI * float(i) / float(rings)
+        var a1: float = PI * float(i+1) / float(rings)
+        for j in range(slices):
+            var b0: float = TAU * float(j) / float(slices)
+            var b1: float = TAU * float(j+1) / float(slices)
+            var v0 := head_point(a0,b0)
+            var v1 := head_point(a1,b0)
+            var v2 := head_point(a0,b1)
+            var v3 := head_point(a1,b1)
+            for v in [v0,v2,v1,v1,v2,v3]:
+                st.add_vertex(v)
+    st.generate_normals()
+    mesh_node(parent,st.commit(),skin)
+
+func head_point(theta: float, phi: float) -> Vector3:
+    var yy: float = cos(theta)
+    var jaw_t: float = 1.0-smoothstep(-.82,-.12,yy)
+    var rx: float = .113*(1.0-.20*jaw_t)
+    var rz: float = .101*(1.0-.065*jaw_t)
+    var xx: float = sin(theta)*cos(phi)
+    var zz: float = sin(theta)*sin(phi)
+    var face_z: float = -.006-.012*jaw_t
+    return Vector3(rx*xx,1.592+.151*yy,face_z+rz*zz)
+
 func face(parent: Node3D, is_female: bool) -> void:
-    var skin := "efc4a5" if not is_female else "f1cab3"
-    var skin_shadow := "d6a18b" if not is_female else "e4b09d"
-    var hair := "262223"
-    var eyebrow := "3a2c27"
-    var eye_white := "f8f2e9"
-    var iris := "795638" if not is_female else "654b38"
-    var face_w := .111 if not is_female else .105
-    # Long continuous sculpted mesh. Crown is wider than jaw, jaw converges softly.
-    tube(parent,[
-        [0,1.445,0.006,.019,.016],
-        [0,1.466,0,.055,.053],
-        [0,1.493,0,.085,.080],
-        [0,1.540,0,.105,.097],
-        [0,1.589,0,face_w,.104],
-        [0,1.636,0,face_w,.105],
-        [0,1.681,.002,.103,.094],
-        [0,1.714,.012,.083,.070],
-        [0,1.736,.014,.050,.041],
-        [0,1.744,.015,.012,.010]
-    ],skin,36)
-    ellipsoid(parent,Vector3(0,1.469,.008),Vector3(.057,.027,.060),skin)
-    # Soft cheeks, connected visually with head; fine visible ears and jaw definition.
+    var skin := "ecc2a5" if not is_female else "f0cdb6"
+    var hair := "332824" if not is_female else "292528"
+    var brow := "3b2b26"
+    head_form(parent,skin)
     for side in [-1.0,1.0]:
-        ellipsoid(parent,Vector3(side*face_w*.92,1.591,.005),
-            Vector3(.015,.031,.017),skin)
-        var eye_x: float=side*.051
-        # Forward is -Z for the current orthographic camera.
-        ellipsoid(parent,Vector3(eye_x,1.624,-.102),
-            Vector3(.029,.020,.006),eye_white)
-        ellipsoid(parent,Vector3(eye_x-side*.002,1.624,-.109),
-            Vector3(.014,.016,.004),iris)
-        ellipsoid(parent,Vector3(eye_x-side*.003,1.624,-.114),
-            Vector3(.008,.010,.003),"251d1a")
-        ellipsoid(parent,Vector3(eye_x-side*.007,1.631,-.117),
-            Vector3(.004,.004,.002),"ffffff")
-        # Strong brows from Western character reference; no anime eyeliner.
-        tube_line(parent,[
-            Vector3(eye_x-side*.025,1.659,-.092),
-            Vector3(eye_x,1.664,-.102),
-            Vector3(eye_x+side*.025,1.657,-.089)
-        ],.006,eyebrow)
-        ellipsoid(parent,Vector3(side*.085,1.555,-.066),
-            Vector3(.007,.006,.005),skin_shadow)
-    # Rounded bridge and nose tip, thin under lip instead of a huge pasted mouth.
-    ellipsoid(parent,Vector3(0,1.594,-.107),
-        Vector3(.011,.030,.012),skin)
-    ellipsoid(parent,Vector3(0,1.573,-.120),
-        Vector3(.019,.012,.016),skin)
-    tube_line(parent,[
-        Vector3(-.046,1.526,-.083),
-        Vector3(-.030,1.516,-.101),
-        Vector3(0,1.510,-.106),
-        Vector3(.030,1.516,-.101),
-        Vector3(.046,1.526,-.083)
-    ],.0038,"835047")
-    # Very small natural smile teeth, not a big cartoon mouth
-    ellipsoid(parent,Vector3(0,1.516,-.110),
-        Vector3(.019,.004,.002),"fff5ec")
-    tube_line(parent,[
-        Vector3(-.022,1.506,-.100),
-        Vector3(0,1.503,-.106),
-        Vector3(.022,1.506,-.100)
-    ],.0021,"cc8f7e")
-    # Existing hairstyle remains short black for man; ponytail for woman.
-    tube(parent,[
-        [0,1.689,.017,.086,.076],
-        [0,1.716,.014,.105,.105],
-        [0,1.749,.012,.107,.108],
-        [0,1.768,.010,.086,.094],
-        [0,1.780,.008,.040,.049],
-        [0,1.788,.008,.003,.004]
-    ],hair,36)
-    ellipsoid(parent,Vector3(0,1.738,-.010),Vector3(.107,.058,.099),hair)
-    # angled fringe, organic locks embedded in scalp
-    for i in range(5):
-        var tx: float=-.074+i*.035
-        var yy: float=1.708+sin(float(i)*1.6)*.004
-        ellipsoid(parent,Vector3(tx,yy,-.081),
-            Vector3(.022,.008,.016),hair,Vector3(0,0,-.14+i*.07))
+        ellipsoid(parent,Vector3(side*.107,1.588,.001),Vector3(.013,.029,.015),skin)
+        var ex: float=side*(.047 if not is_female else .049)
+        # eyes partly embedded: no oversized protruding spheres
+        ellipsoid(parent,Vector3(ex,1.626,-.098),Vector3(.025,.019,.009),"eee9df")
+        ellipsoid(parent,Vector3(ex-side*.003,1.625,-.106),Vector3(.013,.015,.006),"6e4a32")
+        ellipsoid(parent,Vector3(ex-side*.003,1.625,-.111),Vector3(.007,.010,.004),"211d1d")
+        ellipsoid(parent,Vector3(ex-side*.008,1.632,-.115),Vector3(.004,.004,.002),"fefaf0")
+        tube_line(parent,[Vector3(ex-side*.024,1.660,-.091),Vector3(ex,1.666,-.103),Vector3(ex+side*.026,1.660,-.086)],.0058,brow)
+        ellipsoid(parent,Vector3(side*.081,1.579,-.076),Vector3(.020,.010,.009),"dcb39e")
+    ellipsoid(parent,Vector3(0,1.603,-.103),Vector3(.016,.034,.019),skin)
+    ellipsoid(parent,Vector3(0,1.581,-.121),Vector3(.022,.012,.018),skin)
+    tube_line(parent,[Vector3(-.044,1.539,-.080),Vector3(-.030,1.528,-.099),Vector3(0,1.522,-.107),Vector3(.030,1.528,-.099),Vector3(.044,1.539,-.080)],.0035,"7e4c42")
+    ellipsoid(parent,Vector3(0,1.524,-.108),Vector3(.026,.006,.003),"fff1e3")
+    tube_line(parent,[Vector3(-.027,1.514,-.092),Vector3(0,1.510,-.102),Vector3(.027,1.514,-.092)],.0022,"be8376")
+    # Layered small hair locks, not bowl-cut sphere
+    ellipsoid(parent,Vector3(0,1.734,.022),Vector3(.110,.071,.109),hair)
+    ellipsoid(parent,Vector3(-.061,1.740,-.014),Vector3(.055,.048,.099),hair,Vector3(0,0,-.13))
+    ellipsoid(parent,Vector3(.055,1.735,.012),Vector3(.057,.048,.091),hair,Vector3(0,0,.17))
+    for k in range(8):
+        var xx: float=-.084+float(k)*.024
+        var yy: float=1.709+sin(float(k)*1.8)*.012
+        var zz: float=-.072+cos(float(k)*.83)*.009
+        ellipsoid(parent,Vector3(xx,yy,zz),Vector3(.022,.024,.022),hair,Vector3(0,0,-.22+float(k)*.067))
     if is_female:
-        # tied low ponytail, hanging behind right shoulder
-        ellipsoid(parent,Vector3(.079,1.677,.094),
-            Vector3(.038,.042,.039),hair)
-        tube(parent,[
-            [.086,1.688,.118,.026,.029],
-            [.091,1.622,.136,.041,.032],
-            [.104,1.530,.145,.040,.032],
-            [.108,1.452,.149,.029,.026],
-            [.110,1.419,.150,.009,.010]
-        ],hair,20)
+        ellipsoid(parent,Vector3(.094,1.671,.058),Vector3(.047,.053,.055),hair)
+        ellipsoid(parent,Vector3(.133,1.592,.104),Vector3(.039,.086,.043),hair,Vector3(0,0,-.28))
+        ellipsoid(parent,Vector3(.147,1.515,.107),Vector3(.033,.065,.035),hair,Vector3(0,0,-.28))
 
 func person(offset: float, is_female: bool) -> Node3D:
     var root := Node3D.new()
